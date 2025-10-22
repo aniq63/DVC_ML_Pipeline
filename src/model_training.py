@@ -3,6 +3,7 @@ from sklearn.ensemble import RandomForestClassifier
 import logging
 import pandas as pd
 import pickle
+import yaml
 
 # =======================
 # Logging Setup
@@ -34,16 +35,45 @@ else:
     logger.addHandler(file_handler)
 
 # =======================
+# Load the Parameter
+# =======================
+def load_params(params_path: str) -> dict:
+    """Load parameters from a YAML file."""
+    try:
+        with open(params_path, 'r') as file:
+            params = yaml.safe_load(file)
+        logger.debug('Parameters retrieved from %s', params_path)
+        return params
+    except FileNotFoundError:
+        logger.error('File not found: %s', params_path)
+        raise
+    except yaml.YAMLError as e:
+        logger.error('YAML error: %s', e)
+        raise
+    except Exception as e:
+        logger.error('Unexpected error: %s', e)
+        raise
+
+
+# =======================
 # Model Function
 # =======================
 def apply_RF_Model(X_train, y_train):
     """Train a Random Forest model."""
     logger.info("Initializing Random Forest model...")
+
+    # call the load parameters function
+    params  = load_params(params_path="params.yaml")
+    # Fetching the parameters
+    n_estimators = params["model_training"]["n_estimators"]
+    max_depth = params["model_training"]["max_depth"]
+    random_state = params["model_training"]["random_state"]
+
+
     rf_model = RandomForestClassifier(
-        n_estimators=200,
-        max_depth=None,
-        random_state=42,
-        n_jobs=-1
+        n_estimators= n_estimators,
+        max_depth= max_depth,
+        random_state= random_state,
     )
     logger.info("Training Random Forest model...")
     rf_model.fit(X_train, y_train)

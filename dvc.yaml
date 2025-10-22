@@ -3,6 +3,8 @@ stages:
     cmd: python src/data_ingestion.py
     deps: 
       - src/data_ingestion.py
+    params:
+      - data_ingestion.test_size  
     outs:
       - data/raw
 
@@ -19,6 +21,8 @@ stages:
     deps:
       - src/feature_engineering.py
       - data/pre_process
+    params:
+    - feature_engineering.max_features  
     outs:
       - data/encoded_data
 
@@ -28,6 +32,10 @@ stages:
       - src/model_training.py
       - data/encoded_data
       - data/pre_process
+    params:
+      - model_training.n_estimators
+      - model_training.max_depth
+      - model_training.random_state  
     outs:
       - models/rf_model.pkl
   
