@@ -1,0 +1,99 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python src/data_ingestion.py
+    deps:
+    - path: src/data_ingestion.py
+      hash: md5
+      md5: d512731fd80a9b3716d8943fa51546cd
+      size: 3301
+    outs:
+    - path: data/raw
+      hash: md5
+      md5: 3f8b2ab97efe57e53bb2017bb7adeddd.dir
+      size: 5081983
+      nfiles: 2
+  data_preprocessing:
+    cmd: python src/data_preprocessing.py
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: 3f8b2ab97efe57e53bb2017bb7adeddd.dir
+      size: 5081983
+      nfiles: 2
+    - path: src/data_preprocessing.py
+      hash: md5
+      md5: b19d23b730320cb9853f735ee5db916d
+      size: 3748
+    outs:
+    - path: data/pre_process
+      hash: md5
+      md5: fb28776aeb29de6995c72f13b6e8ca67.dir
+      size: 8193114
+      nfiles: 2
+  feature_engineering:
+    cmd: python src/feature_engineering.py
+    deps:
+    - path: data/pre_process
+      hash: md5
+      md5: fb28776aeb29de6995c72f13b6e8ca67.dir
+      size: 8193114
+      nfiles: 2
+    - path: src/feature_engineering.py
+      hash: md5
+      md5: 0257bbb993bab2db3730ec4dfcc4a4d2
+      size: 2913
+    outs:
+    - path: data/encoded_data
+      hash: md5
+      md5: 9f590a1273e1bf00fe8328f280a32cc6.dir
+      size: 94164472
+      nfiles: 2
+  model_training:
+    cmd: python src/model_training.py
+    deps:
+    - path: data/encoded_data
+      hash: md5
+      md5: 9f590a1273e1bf00fe8328f280a32cc6.dir
+      size: 94164472
+      nfiles: 2
+    - path: data/pre_process
+      hash: md5
+      md5: fb28776aeb29de6995c72f13b6e8ca67.dir
+      size: 8193114
+      nfiles: 2
+    - path: src/model_training.py
+      hash: md5
+      md5: 2e349cb728ccb025ee508b08731e68c4
+      size: 2790
+    outs:
+    - path: models/rf_model.pkl
+      hash: md5
+      md5: a27d929bcdbd52d7c3d2226d388af611
+      size: 12458429
+  model_evaluation:
+    cmd: python src/model_evaluating.py
+    deps:
+    - path: data/encoded_data
+      hash: md5
+      md5: 9f590a1273e1bf00fe8328f280a32cc6.dir
+      size: 94164472
+      nfiles: 2
+    - path: data/pre_process
+      hash: md5
+      md5: fb28776aeb29de6995c72f13b6e8ca67.dir
+      size: 8193114
+      nfiles: 2
+    - path: models/rf_model.pkl
+      hash: md5
+      md5: a27d929bcdbd52d7c3d2226d388af611
+      size: 12458429
+    - path: src/model_evaluating.py
+      hash: md5
+      md5: e5b32e0c2efaae5fd2e5278c6239111d
+      size: 3694
+    outs:
+    - path: evaluation_results/evaluation_results.txt
+      hash: md5
+      md5: e88b84bfaebf15f11c6ccb7bc2097bc0
+      size: 705

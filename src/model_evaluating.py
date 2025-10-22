@@ -60,7 +60,7 @@ def main():
         y_test = pd.read_csv("./data/pre_process/processed_test.csv")
 
         if 'labels' not in y_test.columns:
-            raise KeyError("❌ Column 'labels' not found in processed_test.csv")
+            raise KeyError("Column 'labels' not found in processed_test.csv")
 
         y_test = y_test['labels']
 

@@ -3,3 +3,4 @@ nltk
 scikit-learn
 kagglehub[pandas-datasets]
 logging
+dvc
