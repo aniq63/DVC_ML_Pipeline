@@ -4,3 +4,4 @@ scikit-learn
 kagglehub[pandas-datasets]
 logging
 dvc
+dvclive

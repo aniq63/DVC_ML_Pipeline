@@ -2,7 +2,9 @@ import os
 import pickle
 import logging
 import pandas as pd
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix,precision_score, recall_score
+import yaml
+from dvclive import Live
 
 # =======================
 # Logging Setup
@@ -33,12 +35,39 @@ else:
     logger.addHandler(console_handler)
     logger.addHandler(file_handler)
 
+
+# =======================
+# Load the Parameters Function
+# =======================
+
+def load_params(params_path: str) -> dict:
+    """Load parameters from a YAML file."""
+    try:
+        with open(params_path, 'r') as file:
+            params = yaml.safe_load(file)
+        logger.debug('Parameters retrieved from %s', params_path)
+        return params
+    except FileNotFoundError:
+        logger.error('File not found: %s', params_path)
+        raise
+    except yaml.YAMLError as e:
+        logger.error('YAML error: %s', e)
+        raise
+    except Exception as e:
+        logger.error('Unexpected error: %s', e)
+        raise
+
 # =======================
 # Main Function
 # =======================
 def main():
     try:
         logger.info("Model Evaluation Started")
+
+        # ------------------------------
+        # Load Params
+        # ------------------------------
+        params = load_params(params_path = "params.yaml")
 
         # ------------------------------
         # Load model
@@ -100,6 +129,13 @@ def main():
 
         logger.info(f"Evaluation results saved to {results_path}")
         logger.info("Model Evaluation Completed Successfully.")
+
+        with Live(save_dvc_exp=True) as live:
+         live.log_metric('accuracy', acc)
+         live.log_metric('precision', precision_score(y_test,y_pred,average='weighted'))
+         live.log_metric('recall', recall_score(y_test,y_pred, average='weighted'))
+
+         live.log_params(params)
 
     except Exception as e:
         logger.error(f"Model evaluation failed: {e}")
